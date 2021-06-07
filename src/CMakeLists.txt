@@ -17,7 +17,16 @@ include(../lib/heatshrink/CMakeLists.txt)
 ## Sorted alphabetically
 add_executable(${CMAKE_PROJECT_NAME}
     ${TINYUSB_LIBNETWORKING_SOURCES}
+    algo-heatshrink.c
     main.c
+)
+
+## Config for the heatshrink library
+target_compile_definitions(${CMAKE_PROJECT_NAME}
+    PUBLIC HEATSHRINK_DYNAMIC_ALLOC=0
+    PUBLIC HEATSHRINK_STATIC_INPUT_BUFFER_SIZE=600
+    PUBLIC HEATSHRINK_STATIC_WINDOW_BITS=9
+    PUBLIC HEATSHRINK_STATIC_LOOKAHEAD_BITS=6
 )
 
 ## Needed so tusb_config.h is found by the tinyUSB-library included in the pico-sdk
