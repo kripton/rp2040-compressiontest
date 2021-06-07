@@ -29,11 +29,11 @@ void heatshrink_compress(uint8_t *input, size_t insize, uint8_t *output, size_t 
             heatshrink_encoder_finish(&enc);
         }
 
-        HSE_poll_res pres;
+        HSE_poll_res res;
         do {
-            pres = heatshrink_encoder_poll(&enc, &output[polled], comp_sz - polled, &count);
+            res = heatshrink_encoder_poll(&enc, &output[polled], comp_sz - polled, &count);
             polled += count;
-        } while (pres == HSER_POLL_MORE);
+        } while (res == HSER_POLL_MORE);
 
         if (sunk == insize) {
             heatshrink_encoder_finish(&enc);
@@ -59,11 +59,11 @@ void heatshrink_uncompress(uint8_t *input, size_t insize, uint8_t *output, size_
             heatshrink_decoder_finish(&dec);
         }
 
-        HSD_poll_res pres;
+        HSD_poll_res res;
         do {
-            pres = heatshrink_decoder_poll(&dec, &output[polled], decomp_sz - polled, &count);
+            res = heatshrink_decoder_poll(&dec, &output[polled], decomp_sz - polled, &count);
             polled += count;
-        } while (pres == HSDR_POLL_MORE);
+        } while (res == HSDR_POLL_MORE);
 
         if (sunk == insize) {
             HSD_finish_res fres = heatshrink_decoder_finish(&dec);
