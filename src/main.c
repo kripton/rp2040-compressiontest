@@ -8,6 +8,11 @@
 #include "pico/time.h"
 #include "tusb.h"
 
+#include "hardware/pll.h"
+#include "hardware/clocks.h"
+#include "hardware/structs/pll.h"
+#include "hardware/structs/clocks.h"
+
 #include "picotool_binary_information.h"
 
 #include "algo-heatshrink.h"
@@ -40,6 +45,7 @@ struct algo {
     uint8_t             name[32];    // Human-readable name
     void (*init)();
     void (*compress)(uint8_t* input, size_t insize, uint8_t* output, size_t* outsize);
+    void (*uncompress)(uint8_t* input, size_t insize, uint8_t* output, size_t* outsize);
 };
 
 enum {
@@ -51,20 +57,21 @@ enum {
 struct algo algos[ALGO_NUM_TOTAL];
 
 // Variables used for elapsed time calculation
-uint32_t start_time, finish_time, elapsed_time;
+uint32_t start_time, finish_time, elapsed_time, elapsed_time_2;
 
 uint16_t i;
 uint8_t j;
 
-// Buffer to store compressed data
+// Buffer to store compressed and verification data temporarily
 #define OUTBUF_SIZE 1024
 uint8_t     outbuf[OUTBUF_SIZE];
+uint8_t     outbuf_2[OUTBUF_SIZE];
 
 int main() {
     // Overclock the board to 250MHz. According to
     // https://www.youtube.com/watch?v=G2BuoFNLo this should be
     // totally safe with the default 1.10V Vcore
-    //set_sys_clock_khz(250000, true);
+    set_sys_clock_khz(250000, true);
 
     // Enable the USB console
     stdio_usb_init();
@@ -73,8 +80,10 @@ int main() {
         sleep_ms(100);
     }
 
-    printf("Welcome to rp2040-compressiontest\n\n");
+    uint f_pll_sys = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_PLL_SYS_CLKSRC_PRIMARY);
 
+    printf("Welcome to rp2040-compressiontest\n");
+    printf("pll_sys  = %dkHz (= ~%dMHz)\n\n", f_pll_sys, f_pll_sys / 1000);
 
     ////////////////////////////////////////////////////
     // INIT TEST VECTORS ///////////////////////////////
@@ -168,6 +177,7 @@ int main() {
     sprintf(algos[ALGO_HEATSHRINK].name, "HEATSHRINK");
     algos[ALGO_HEATSHRINK].init = heatshrink_init;
     algos[ALGO_HEATSHRINK].compress = heatshrink_compress;
+    algos[ALGO_HEATSHRINK].uncompress = heatshrink_uncompress;
     algos[ALGO_HEATSHRINK].init();
 
     finish_time = time_us_32();
@@ -183,19 +193,40 @@ int main() {
     ////////////////////////////////////////////////////
     // Run the benchmark ///////////////////////////////
     ////////////////////////////////////////////////////
-    printf("BENCHMARK RUN STARTS HERE ;)\n");
+    printf("BENCHMARK RUN START\n\n");
     for (i = 0; i < ALGO_NUM_TOTAL; i++) {
-        printf("\t%s:\n", algos[i].name);
+        printf("%s:\n", algos[i].name);
         for (j = 0; j < TESTVEC_NUM_TOTAL; j++) {
-            printf("\t\t%s:\t\t\t", testvecs[j].name);
+            printf("\t%s:", testvecs[j].name);
             size_t outsize = OUTBUF_SIZE;
+            size_t outsize_2 = OUTBUF_SIZE;
+
+            // Compress
             memset(outbuf, 0, OUTBUF_SIZE);
             start_time = time_us_32();
             algos[i].compress(testvecs[j].data, testvecs[j].size, outbuf, &outsize);
             finish_time = time_us_32();
             elapsed_time = finish_time - start_time;
-            float ratio = outsize * 100 / testvecs[j].size;
-            printf("%luµs; Insize: %u; Outsize: %u, Ratio: %f%%\n", elapsed_time, testvecs[j].size, outsize, ratio);
+
+            // Uncompress for verification and timing
+            memset(outbuf_2, 0, OUTBUF_SIZE);
+            start_time = time_us_32();
+            algos[i].uncompress(outbuf, outsize, outbuf_2, &outsize_2);
+            finish_time = time_us_32();
+            elapsed_time_2 = finish_time - start_time;
+
+            int ratio = outsize * 100 / testvecs[j].size;
+            for(int k = 0; k < (32 - strlen(testvecs[j].name)); k++) {
+                printf(" ");
+            }
+            printf("Runtime: %5luµs;\tInsize: %3u;\tOutsize: %3u,\tRatio: %3d%%\tDecompress time: %5luµs\tVerification: %s\n",
+                elapsed_time, testvecs[j].size, outsize, ratio, elapsed_time_2, memcmp(testvecs[j].data, outbuf_2, testvecs[j].size) ? "FAILED" : "PASSED");
         }
     }
+
+    printf("\n");
+    sleep_ms(500);
+    printf("\n");
+    sleep_ms(500);
+    printf("\n");
 };
