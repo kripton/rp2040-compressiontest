@@ -16,6 +16,7 @@
 #include "picotool_binary_information.h"
 
 #include "algo-heatshrink.h"
+#include "algo-zlib.h"
 
 
 // TEST VECTORS
@@ -50,6 +51,7 @@ struct algo {
 
 enum {
     ALGO_HEATSHRINK,
+    ALGO_ZLIB,
     // Add more HERE
     ALGO_NUM_TOTAL
 };
@@ -179,6 +181,13 @@ int main() {
     algos[ALGO_HEATSHRINK].compress = heatshrink_compress;
     algos[ALGO_HEATSHRINK].uncompress = heatshrink_uncompress;
     algos[ALGO_HEATSHRINK].init();
+
+    // Algo 0: zlib
+    sprintf(algos[ALGO_ZLIB].name, "ZLIB");
+    algos[ALGO_ZLIB].init = zlib_init;
+    algos[ALGO_ZLIB].compress = zlib_compress;
+    algos[ALGO_ZLIB].uncompress = zlib_uncompress;
+    algos[ALGO_ZLIB].init();
 
     finish_time = time_us_32();
     elapsed_time = finish_time - start_time;

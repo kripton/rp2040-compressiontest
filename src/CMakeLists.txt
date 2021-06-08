@@ -12,12 +12,14 @@ pico_sdk_init()
 
 ## Include the CMakeLists-files of (non-pico-sdk)-libraries we will be using
 include(../lib/heatshrink/CMakeLists.txt)
+include(../lib/zlib/interfaceLibForPicoSDK.cmake)
 
 ## Add our own C/C++ files here
 ## Sorted alphabetically
 add_executable(${CMAKE_PROJECT_NAME}
     ${TINYUSB_LIBNETWORKING_SOURCES}
     algo-heatshrink.c
+    algo-zlib.c
     main.c
 )
 
@@ -27,6 +29,12 @@ target_compile_definitions(${CMAKE_PROJECT_NAME}
     PUBLIC HEATSHRINK_STATIC_INPUT_BUFFER_SIZE=600
     PUBLIC HEATSHRINK_STATIC_WINDOW_BITS=9
     PUBLIC HEATSHRINK_STATIC_LOOKAHEAD_BITS=6
+)
+
+## Config for the zlib library to reduce memory usage
+target_compile_definitions(${CMAKE_PROJECT_NAME}
+    PUBLIC MAX_WBITS=9
+    PUBLIC MAX_MEM_LEVEL=4
 )
 
 ## Needed so tusb_config.h is found by the tinyUSB-library included in the pico-sdk
@@ -39,6 +47,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME}
     heatshrink
     pico_stdlib
+    zlib
 )
 
 ## enable usb output, disable uart output

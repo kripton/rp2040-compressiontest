@@ -1,3 +1,12 @@
 [submodule "lib/heatshrink"]
 	path = lib/heatshrink
 	url = https://github.com/kripton/heatshrink.git
+[submodule "lib/snappy"]
+	path = lib/snappy
+	url = https://github.com/kripton/snappy.git
+[submodule "lib/zstd"]
+	path = lib/zstd
+	url = https://github.com/kripton/zstd.git
+[submodule "lib/zlib"]
+	path = lib/zlib
+	url = https://github.com/kripton/zlib.git
