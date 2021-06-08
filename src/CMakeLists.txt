@@ -13,6 +13,7 @@ pico_sdk_init()
 ## Include the CMakeLists-files of (non-pico-sdk)-libraries we will be using
 include(../lib/heatshrink/CMakeLists.txt)
 include(../lib/zlib/interfaceLibForPicoSDK.cmake)
+include(../lib/zstd/interfaceLibForPicoSDK.cmake)
 
 ## Add our own C/C++ files here
 ## Sorted alphabetically
@@ -20,6 +21,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     ${TINYUSB_LIBNETWORKING_SOURCES}
     algo-heatshrink.c
     algo-zlib.c
+    algo-zstd.c
     main.c
 )
 
@@ -48,6 +50,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     heatshrink
     pico_stdlib
     zlib
+    zstd
 )
 
 ## enable usb output, disable uart output
