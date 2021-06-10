@@ -18,6 +18,7 @@
 #include "algo-heatshrink.h"
 #include "algo-zlib.h"
 #include "algo-zstd.h"
+#include "algo-snappy.h"
 
 
 // TEST VECTORS
@@ -54,6 +55,7 @@ enum {
     ALGO_HEATSHRINK,
     ALGO_ZLIB,
     ALGO_ZSTD,
+    ALGO_SNAPPY,
     // Add more HERE
     ALGO_NUM_TOTAL
 };
@@ -197,6 +199,13 @@ int main() {
     algos[ALGO_ZSTD].compress = zstd_compress;
     algos[ALGO_ZSTD].uncompress = zstd_uncompress;
     algos[ALGO_ZSTD].init();
+
+    // Algo 2: snappy
+    sprintf(algos[ALGO_SNAPPY].name, "SNAPPY");
+    algos[ALGO_SNAPPY].init = mysnappy_init;
+    algos[ALGO_SNAPPY].compress = mysnappy_compress;
+    algos[ALGO_SNAPPY].uncompress = mysnappy_uncompress;
+    algos[ALGO_SNAPPY].init();
 
     finish_time = time_us_32();
     elapsed_time = finish_time - start_time;
