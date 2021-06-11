@@ -17,8 +17,13 @@
 
 #include "algo-heatshrink.h"
 #include "algo-zlib.h"
+#if HAVE_ALGO_ZSTD
 #include "algo-zstd.h"
+#endif
 #include "algo-snappy.h"
+#if HAVE_ALGO_BROTLI
+#include "algo-brotli.h"
+#endif
 
 
 // TEST VECTORS
@@ -54,8 +59,13 @@ struct algo {
 enum {
     ALGO_HEATSHRINK,
     ALGO_ZLIB,
+#if HAVE_ALGO_ZSTD
     ALGO_ZSTD,
+#endif
     ALGO_SNAPPY,
+#if HAVE_ALGO_BROTLI
+    ALGO_BROTLI,
+#endif
     // Add more HERE
     ALGO_NUM_TOTAL
 };
@@ -179,33 +189,39 @@ int main() {
     printf("Initializing compression algorithms ... ");
     start_time = time_us_32();
 
-    // Algo 0: heatshrink
     sprintf(algos[ALGO_HEATSHRINK].name, "HEATSHRINK");
     algos[ALGO_HEATSHRINK].init = heatshrink_init;
     algos[ALGO_HEATSHRINK].compress = heatshrink_compress;
     algos[ALGO_HEATSHRINK].uncompress = heatshrink_uncompress;
     algos[ALGO_HEATSHRINK].init();
 
-    // Algo 1: zlib
     sprintf(algos[ALGO_ZLIB].name, "ZLIB");
     algos[ALGO_ZLIB].init = zlib_init;
     algos[ALGO_ZLIB].compress = zlib_compress;
     algos[ALGO_ZLIB].uncompress = zlib_uncompress;
     algos[ALGO_ZLIB].init();
 
-    // Algo 2: zstd
+#if HAVE_ALGO_ZSTD
     sprintf(algos[ALGO_ZSTD].name, "ZSTD");
     algos[ALGO_ZSTD].init = zstd_init;
     algos[ALGO_ZSTD].compress = zstd_compress;
     algos[ALGO_ZSTD].uncompress = zstd_uncompress;
     algos[ALGO_ZSTD].init();
+#endif
 
-    // Algo 2: snappy
     sprintf(algos[ALGO_SNAPPY].name, "SNAPPY");
     algos[ALGO_SNAPPY].init = mysnappy_init;
     algos[ALGO_SNAPPY].compress = mysnappy_compress;
     algos[ALGO_SNAPPY].uncompress = mysnappy_uncompress;
     algos[ALGO_SNAPPY].init();
+
+#if HAVE_ALGO_BROTLI
+    sprintf(algos[ALGO_BROTLI].name, "BROTLI");
+    algos[ALGO_BROTLI].init = brotli_init;
+    algos[ALGO_BROTLI].compress = brotli_compress;
+    algos[ALGO_BROTLI].uncompress = brotli_uncompress;
+    algos[ALGO_BROTLI].init();
+#endif
 
     finish_time = time_us_32();
     elapsed_time = finish_time - start_time;

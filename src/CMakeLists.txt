@@ -10,11 +10,16 @@ project(rp2040-compressiontest)
 ## Init the pico-sdk. Will instruct the user what to do if deps are missing
 pico_sdk_init()
 
+## Needed so we can fit all compression algos into the Picos flash
+## See below. However, needs to be set here in order to be effective
+add_compile_options(-Os)
+
 ## Include the CMakeLists-files of (non-pico-sdk)-libraries we will be using
 include(../lib/heatshrink/CMakeLists.txt)
 include(../lib/zlib/interfaceLibForPicoSDK.cmake)
 include(../lib/zstd/interfaceLibForPicoSDK.cmake)
 include(../lib/snappy/interfaceLibForPicoSDK.cmake)
+include(../lib/brotli/interfaceLibForPicoSDK.cmake)
 
 ## Add our own C/C++ files here
 ## Sorted alphabetically
@@ -24,7 +29,21 @@ add_executable(${CMAKE_PROJECT_NAME}
     algo-zlib.c
     algo-zstd.c
     algo-snappy.c
+    algo-brotli.c
     main.c
+)
+
+## Unfortunately, including all algortihms would result in a binary file
+## too large for the Pico board (~2.7MB vs. 2MB available)
+## We could try -Os but that contradicts our benchmarking effort ... UPDATE:
+## just trying it revealed that the code is not that much slower.
+## Using -flto broke the build :/
+## This is why you can either exclude ZSTD OR BROTLI, which both add a
+## remarkable amount to the size of the UF2 file.
+## When using -Os (see above), all algos just fit
+target_compile_definitions(${CMAKE_PROJECT_NAME}
+    PUBLIC HAVE_ALGO_ZSTD=1
+    PUBLIC HAVE_ALGO_BROTLI=1
 )
 
 ## Config for the heatshrink library
@@ -54,6 +73,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     zlib
     zstd
     snappy
+    brotli
 )
 
 ## enable usb output, disable uart output

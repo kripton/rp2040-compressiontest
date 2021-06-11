@@ -10,3 +10,6 @@
 [submodule "lib/zlib"]
 	path = lib/zlib
 	url = https://github.com/kripton/zlib.git
+[submodule "lib/brotli"]
+	path = lib/brotli
+	url = https://github.com/kripton/brotli.git
