@@ -33,7 +33,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     main.c
 )
 
-## Unfortunately, including all algortihms would result in a binary file
+## Unfortunately, including all algorithms would result in a binary file
 ## too large for the Pico board (~2.7MB vs. 2MB available)
 ## We could try -Os but that contradicts our benchmarking effort ... UPDATE:
 ## just trying it revealed that the code is not that much slower.
