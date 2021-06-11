@@ -20,22 +20,6 @@ use case and requirements might be hugely different.
 Welcome to rp2040-compressiontest
 pll_sys  = 250001kHz (= ~250MHz)
 
-Initializing test vectors ... 482µs
-8 test vectors:
-        ALL_ZERO
-
-
-Welcome to rp2040-compressiontest
-pll_sys  = 250000kHz (= ~250MHz)
-
-Initializing test vectors ... 493µs
-8 test vectors:
-        ALL_ZERO
-
-
-Welcome to rp2040-compressiontest
-pll_sys  = 250001kHz (= ~250MHz)
-
 Initializing test vectors ... 495µs
 8 test vectors:
         ALL_ZERO
