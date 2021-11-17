@@ -13,3 +13,6 @@
 [submodule "lib/brotli"]
 	path = lib/brotli
 	url = https://github.com/kripton/brotli.git
+[submodule "lib/snappy-c"]
+	path = lib/snappy-c
+	url = https://github.com/kripton/snappy-c.git
