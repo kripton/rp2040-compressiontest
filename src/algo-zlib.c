@@ -18,3 +18,7 @@ void zlib_uncompress(uint8_t *input, size_t insize, uint8_t *output, size_t *out
     long unsigned int outsize2 = *outsize;
     uncompress(output, &outsize2, input, insize);
 }
+
+void zlib_deinit()
+{
+}

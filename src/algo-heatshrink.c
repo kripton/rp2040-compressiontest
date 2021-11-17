@@ -72,3 +72,9 @@ void heatshrink_uncompress(uint8_t *input, size_t insize, uint8_t *output, size_
 
     *outsize = polled;
 }
+
+void heatshrink_deinit()
+{
+    heatshrink_decoder_reset(&dec);
+    heatshrink_encoder_reset(&enc);
+}

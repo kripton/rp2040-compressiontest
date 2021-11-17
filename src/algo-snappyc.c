@@ -18,3 +18,8 @@ void mysnappyc_uncompress(uint8_t *input, size_t insize, uint8_t *output, size_t
 {
     SNAPPYC_FUNCTION_NAME_PREFIXsnappy_uncompress(input, insize, output);
 }
+
+void mysnappyc_deinit()
+{
+    snappy_free_env(&env);
+}

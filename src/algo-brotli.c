@@ -16,3 +16,7 @@ void brotli_uncompress(uint8_t *input, size_t insize, uint8_t *output, size_t *o
 {
     BrotliDecoderDecompress(insize, input, outsize, output);
 }
+
+void brotli_deinit()
+{
+}

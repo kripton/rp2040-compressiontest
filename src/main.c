@@ -55,6 +55,7 @@ struct algo {
     void (*init)();
     void (*compress)(uint8_t* input, size_t insize, uint8_t* output, size_t* outsize);
     void (*uncompress)(uint8_t* input, size_t insize, uint8_t* output, size_t* outsize);
+    void (*deinit)();
 };
 
 enum {
@@ -195,40 +196,40 @@ int main() {
     algos[ALGO_HEATSHRINK].init = heatshrink_init;
     algos[ALGO_HEATSHRINK].compress = heatshrink_compress;
     algos[ALGO_HEATSHRINK].uncompress = heatshrink_uncompress;
-    algos[ALGO_HEATSHRINK].init();
+    algos[ALGO_HEATSHRINK].deinit = heatshrink_deinit;
 
     sprintf(algos[ALGO_ZLIB].name, "ZLIB");
     algos[ALGO_ZLIB].init = zlib_init;
     algos[ALGO_ZLIB].compress = zlib_compress;
     algos[ALGO_ZLIB].uncompress = zlib_uncompress;
-    algos[ALGO_ZLIB].init();
+    algos[ALGO_ZLIB].deinit = zlib_deinit;
 
 #if HAVE_ALGO_ZSTD
     sprintf(algos[ALGO_ZSTD].name, "ZSTD");
     algos[ALGO_ZSTD].init = zstd_init;
     algos[ALGO_ZSTD].compress = zstd_compress;
     algos[ALGO_ZSTD].uncompress = zstd_uncompress;
-    algos[ALGO_ZSTD].init();
+    algos[ALGO_ZSTD].deinit = zstd_deinit;
 #endif
 
     sprintf(algos[ALGO_SNAPPY].name, "SNAPPY");
     algos[ALGO_SNAPPY].init = mysnappy_init;
     algos[ALGO_SNAPPY].compress = mysnappy_compress;
     algos[ALGO_SNAPPY].uncompress = mysnappy_uncompress;
-    algos[ALGO_SNAPPY].init();
+    algos[ALGO_SNAPPY].deinit = mysnappy_deinit;
 
     sprintf(algos[ALGO_SNAPPYC].name, "SNAPPY-C");
     algos[ALGO_SNAPPYC].init = mysnappyc_init;
     algos[ALGO_SNAPPYC].compress = mysnappyc_compress;
     algos[ALGO_SNAPPYC].uncompress = mysnappyc_uncompress;
-    algos[ALGO_SNAPPYC].init();
+    algos[ALGO_SNAPPYC].deinit = mysnappyc_deinit;
 
 #if HAVE_ALGO_BROTLI
     sprintf(algos[ALGO_BROTLI].name, "BROTLI");
     algos[ALGO_BROTLI].init = brotli_init;
     algos[ALGO_BROTLI].compress = brotli_compress;
     algos[ALGO_BROTLI].uncompress = brotli_uncompress;
-    algos[ALGO_BROTLI].init();
+    algos[ALGO_BROTLI].deinit = brotli_deinit;
 #endif
 
     finish_time = time_us_32();
@@ -252,6 +253,9 @@ int main() {
             size_t outsize = OUTBUF_SIZE;
             size_t outsize_2 = OUTBUF_SIZE;
 
+            // Init
+            algos[i].init();
+
             // Compress
             memset(outbuf, 0, OUTBUF_SIZE);
             start_time = time_us_32();
@@ -266,6 +270,8 @@ int main() {
             finish_time = time_us_32();
             elapsed_time_2 = finish_time - start_time;
 
+            algos[i].deinit();
+
             int ratio = outsize * 100 / testvecs[j].size;
             for(int k = 0; k < (32 - strlen(testvecs[j].name)); k++) {
                 printf(" ");
@@ -275,9 +281,11 @@ int main() {
         }
     }
 
-    printf("\n");
-    sleep_ms(500);
-    printf("\n");
-    sleep_ms(500);
-    printf("\n");
+    printf("\n ... all done :)\n");
+
+    // Idle here instead of returning since that would halt the core
+    // and prevent correctly printing the last lines via USB
+    while (true) {
+        sleep_ms(1);
+    }
 };

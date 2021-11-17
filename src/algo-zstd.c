@@ -20,3 +20,9 @@ void zstd_uncompress(uint8_t *input, size_t insize, uint8_t *output, size_t *out
 {
     *outsize = ZSTD_decompressDCtx(dctx, output, *outsize, input, insize);
 }
+
+void zstd_deinit()
+{
+    ZSTD_freeCCtx(cctx);
+    ZSTD_freeDCtx(dctx);
+}
