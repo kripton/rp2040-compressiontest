@@ -25,6 +25,7 @@ include(../lib/heatshrink/CMakeLists.txt)
 include(../lib/zlib/interfaceLibForPicoSDK.cmake)
 include(../lib/zstd/interfaceLibForPicoSDK.cmake)
 include(../lib/snappy/interfaceLibForPicoSDK.cmake)
+include(../lib/snappy-c/interfaceLibForPicoSDK.cmake)
 include(../lib/brotli/interfaceLibForPicoSDK.cmake)
 
 ## Add our own C/C++ files here
@@ -35,6 +36,7 @@ add_executable(${CMAKE_PROJECT_NAME}
     algo-zlib.c
     algo-zstd.c
     algo-snappy.c
+    algo-snappyc.c
     algo-brotli.c
     main.c
 )
@@ -79,6 +81,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     zlib
     zstd
     snappy
+    snappyc
     brotli
 )
 

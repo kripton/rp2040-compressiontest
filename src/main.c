@@ -21,6 +21,7 @@
 #include "algo-zstd.h"
 #endif
 #include "algo-snappy.h"
+#include "algo-snappyc.h"
 #if HAVE_ALGO_BROTLI
 #include "algo-brotli.h"
 #endif
@@ -63,6 +64,7 @@ enum {
     ALGO_ZSTD,
 #endif
     ALGO_SNAPPY,
+    ALGO_SNAPPYC,
 #if HAVE_ALGO_BROTLI
     ALGO_BROTLI,
 #endif
@@ -214,6 +216,12 @@ int main() {
     algos[ALGO_SNAPPY].compress = mysnappy_compress;
     algos[ALGO_SNAPPY].uncompress = mysnappy_uncompress;
     algos[ALGO_SNAPPY].init();
+
+    sprintf(algos[ALGO_SNAPPYC].name, "SNAPPY-C");
+    algos[ALGO_SNAPPYC].init = mysnappyc_init;
+    algos[ALGO_SNAPPYC].compress = mysnappyc_compress;
+    algos[ALGO_SNAPPYC].uncompress = mysnappyc_uncompress;
+    algos[ALGO_SNAPPYC].init();
 
 #if HAVE_ALGO_BROTLI
     sprintf(algos[ALGO_BROTLI].name, "BROTLI");

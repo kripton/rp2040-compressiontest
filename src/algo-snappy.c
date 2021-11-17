@@ -1,4 +1,4 @@
-#include "algo-zlib.h"
+#include "algo-snappy.h"
 
 #include "../lib/snappy/snappy-c.h"
 
