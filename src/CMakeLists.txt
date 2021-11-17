@@ -14,6 +14,12 @@ pico_sdk_init()
 ## See below. However, needs to be set here in order to be effective
 add_compile_options(-Os)
 
+## I'd like to use LTO but it doesn't yet work
+## https://github.com/raspberrypi/pico-sdk/issues/97
+#add_compile_options(-flto -fno-fat-lto-objects -flto-partition=1to1 -fuse-ld=bfd -v)
+#add_compile_options(-flto)
+#add_link_options(-Wl,-v -v -t -t)
+
 ## Include the CMakeLists-files of (non-pico-sdk)-libraries we will be using
 include(../lib/heatshrink/CMakeLists.txt)
 include(../lib/zlib/interfaceLibForPicoSDK.cmake)
